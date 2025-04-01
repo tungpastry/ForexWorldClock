@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Clock</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #2c3e50;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .clock-container {
+            display: flex;
+            gap: 100px;
+        }
+        .clock {
+            text-align: center;
+            font-size: 50px;
+        }
+        .clock-face {
+            width: 250px;
+            height: 250px;
+            border: 10px solid white;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            background-color: white;
+        }
+        .hour {
+            width: 10px;
+            height: 75px;
+        }
+        .minute {
+            width: 7px;
+            height: 100px;
+        }
+        .second {
+            width: 5px;
+            height: 112px;
+            background-color: red;
+        }
+        .number {
+            position: absolute;
+            font-size: 35px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="clock">
+            <div>New York</div>
+            <div class="clock-face" id="ny-clock"></div>
+        </div>
+        <div class="clock">
+            <div>London</div>
+            <div class="clock-face" id="london-clock"></div>
+        </div>
+        <div class="clock">
+            <div>Tokyo</div>
+            <div class="clock-face" id="tokyo-clock"></div>
+        </div>
+    </div>
+    
+    <script>
+        function createClockNumbers(clockId) {
+            const clock = document.getElementById(clockId);
+            for (let i = 1; i <= 12; i++) {
+                const number = document.createElement("div");
+                number.className = "number";
+                number.textContent = i;
+                const angle = (i * 30) * (Math.PI / 180);
+                const radius = 100;
+                const x = Math.sin(angle) * radius;
+                const y = -Math.cos(angle) * radius;
+                number.style.transform = `translate(${x}px, ${y}px)`;
+                clock.appendChild(number);
+            }
+        }
+
+        function createClockHands(clockId) {
+            const clock = document.getElementById(clockId);
+            const hourHand = document.createElement("div");
+            hourHand.className = "hand hour";
+            hourHand.id = `${clockId}-hour`;
+            const minuteHand = document.createElement("div");
+            minuteHand.className = "hand minute";
+            minuteHand.id = `${clockId}-minute`;
+            const secondHand = document.createElement("div");
+            secondHand.className = "hand second";
+            secondHand.id = `${clockId}-second`;
+            clock.appendChild(hourHand);
+            clock.appendChild(minuteHand);
+            clock.appendChild(secondHand);
+        }
+
+        function updateClocks() {
+            const now = new Date();
+            updateClock("ny-clock", new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" })));
+            updateClock("london-clock", new Date(now.toLocaleString("en-US", { timeZone: "Europe/London" })));
+            updateClock("tokyo-clock", new Date(now.toLocaleString("en-US", { timeZone: "Asia/Tokyo" })));
+        }
+
+        function updateClock(clockId, time) {
+            const hours = time.getHours() % 12;
+            const minutes = time.getMinutes();
+            const seconds = time.getSeconds();
+
+            const hourDeg = (360 / 12) * hours + (30 / 60) * minutes;
+            const minuteDeg = (360 / 60) * minutes + (6 / 60) * seconds;
+            const secondDeg = (360 / 60) * seconds;
+
+            document.getElementById(`${clockId}-hour`).style.transform = `translate(-50%, 0) rotate(${hourDeg}deg)`;
+            document.getElementById(`${clockId}-minute`).style.transform = `translate(-50%, 0) rotate(${minuteDeg}deg)`;
+            document.getElementById(`${clockId}-second`).style.transform = `translate(-50%, 0) rotate(${secondDeg}deg)`;
+        }
+
+        ["ny-clock", "london-clock", "tokyo-clock"].forEach(clockId => {
+            createClockNumbers(clockId);
+            createClockHands(clockId);
+        });
+        
+        setInterval(updateClocks, 1000);
+        updateClocks();
+    </script>
+</body>
+</html>
